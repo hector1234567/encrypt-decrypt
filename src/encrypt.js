@@ -1,5 +1,6 @@
 const fs = require("node:fs/promises");
 const { Transform } = require("node:stream");
+const { pipeline } = require("node:stream/promises");
 
 const n = +process.argv[2] || 1;
 
@@ -24,10 +25,12 @@ class Encrypt extends Transform {
 
   const readStream = readFile.createReadStream();
   const writeStream = writeFile.createWriteStream();
-
   const transformStream = new Encrypt({ n });
 
-  readStream.pipe(transformStream).pipe(writeStream);
-
-  transformStream.on("end", () => console.log("Encrypted!"));
+  try {
+    await pipeline(readStream, transformStream, writeStream);
+    console.log("Encrypted!");
+  } catch (err) {
+    console.error("Error:", err);
+  }
 })();
