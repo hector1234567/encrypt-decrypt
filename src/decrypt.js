@@ -1,6 +1,8 @@
 const fs = require("node:fs/promises");
 const { Transform } = require("node:stream");
 
+const n = +process.argv[2] || 1;
+
 class Decrypt extends Transform {
   constructor({ n }) {
     super();
@@ -17,13 +19,13 @@ class Decrypt extends Transform {
 }
 
 (async () => {
-  const readFile = await fs.open("encrypted.txt", "r");
-  const writeFile = await fs.open("decrypted.txt", "w");
+  const readFile = await fs.open("files/encrypted.txt", "r");
+  const writeFile = await fs.open("files/decrypted.txt", "w");
 
   const readStream = readFile.createReadStream();
   const writeStream = writeFile.createWriteStream();
 
-  const transformStream = new Decrypt({ n: 45 });
+  const transformStream = new Decrypt({ n });
 
   readStream.pipe(transformStream).pipe(writeStream);
 
