@@ -2,14 +2,14 @@ const fs = require("node:fs/promises");
 const { Transform } = require("node:stream");
 
 class Decrypt extends Transform {
-  constructor({ num }) {
+  constructor({ n }) {
     super();
-    this.num = num;
+    this.n = n;
   }
 
   _transform(chunk, encoding, callback) {
     for (let i = 0; i < chunk.length; i++) {
-      chunk[i] = (chunk[i] + this.num) % 256;
+      chunk[i] = (chunk[i] + this.n) % 256;
     }
     this.push(chunk);
     callback();
@@ -23,7 +23,7 @@ class Decrypt extends Transform {
   const readStream = readFile.createReadStream();
   const writeStream = writeFile.createWriteStream();
 
-  const transformStream = new Decrypt({ num: 45 });
+  const transformStream = new Decrypt({ n: 45 });
 
   readStream.pipe(transformStream).pipe(writeStream);
 
